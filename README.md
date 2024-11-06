@@ -42,7 +42,7 @@ pip install promptweaver
 
 ## Usage
 
-First, you need to start by creating a `.yml.j2` promptweaver template.
+First, you need to start by creating a `.yml.j2` PromptWeaver template.
 
 You will find template examples in our [promptweaver gallery](/samples/).
 
@@ -78,6 +78,36 @@ example_prompt = PromptConfig.from_file_with_sample_values("samples/example.yml.
 
 # Generate content
 generate_content = gemini_client.generate_content(example_prompt)
+print(generate_content.text)
+```
+
+## Function Calling
+
+For adding function calling support to your LLM requests you need to parametrize the `.generate_content()` method with all your tools.
+
+> **Note:** Currently, tools can't be declared in a `.yml.j2` PromptWeaver template.
+
+**Example**
+
+```python
+from promptweaver.core.prompt_template import PromptConfig
+from promptweaver.clients.gemini.gemini_client import GeminiClient
+from vertexai.generative_models import Tool, grounding
+
+# Initialize the Gemini client
+gemini_client = GeminiClient(project="your_project", location="your_location")
+
+# Load the prompt configuration
+prompt_variables = {
+    'user_message': 'What\'s the weather like tomorrow in San Francisco? Should I bring a raincoat?'
+}
+example_prompt = PromptConfig.from_file("samples/01-hello-world-text.yml.j2", prompt_variables)
+
+# Define your tools, such as: GoogleSearchRetrieval (grounding) or FunctionDeclaration (custom tools)
+tool = Tool.from_google_search_retrieval(grounding.GoogleSearchRetrieval())
+
+# The generate_content() method takes **kwargs, supporting any additional keyword arguments from vertexai
+generate_content = gemini_client.generate_content(example_prompt, tools=[tool])
 print(generate_content.text)
 ```
 
