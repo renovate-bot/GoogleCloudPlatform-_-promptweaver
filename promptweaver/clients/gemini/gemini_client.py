@@ -36,7 +36,7 @@ class GeminiClient(BaseLLMClient):
         """
         vertexai.init(project=project, location=location)
     
-    def generate_content(self, prompt_config: PromptConfig, verbose: bool = False) -> GenerationResponse:
+    def generate_content(self, prompt_config: PromptConfig, verbose: bool = False, **kwargs) -> GenerationResponse:
         """
         Generates content using Gemini API based on the provided PromptConfig.
 
@@ -60,6 +60,7 @@ class GeminiClient(BaseLLMClient):
             contents=prompt,
             generation_config=GenerationConfig(**prompt_config.generation_config),
             safety_settings=self._get_safety_settings(prompt_config.safety_settings),
+            **kwargs
         )
 
         return response
